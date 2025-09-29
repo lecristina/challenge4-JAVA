@@ -5,338 +5,582 @@
 - Enrico Figueiredo Del Guerra, RM: 558604
 - Leticia Cristina Dos Santos Passos, RM: 555241
 
-Sistema web completo para gestão de motos desenvolvido com Spring Boot, Thymeleaf, Flyway e Spring Security.
+Sistema web completo para gestão de motos desenvolvido com Spring Boot, Thymeleaf e Spring Security.
 
 ## 📋 Índice
 
-- [Requisitos](#-requisitos)
-- [Configuração do Banco de Dados](#-configuração-do-banco-de-dados)
-- [Instalação e Execução](#-instalação-e-execução)
-- [Credenciais de Acesso](#-credenciais-de-acesso)
-- [Funcionalidades](#-funcionalidades)
-- [Estrutura do Projeto](#-estrutura-do-projeto)
 - [Tecnologias Utilizadas](#-tecnologias-utilizadas)
+- [Pré-requisitos](#-pré-requisitos)
+- [Como Executar](#-como-executar)
+  - [Via Eclipse/IDE](#via-eclipseide)
+  - [Via Terminal/CMD](#via-terminalcmd)
+- [Configuração do Banco](#-configuração-do-banco)
+- [Funcionalidades](#-funcionalidades)
+- [Como Testar](#-como-testar)
+- [Estrutura do Projeto](#-estrutura-do-projeto)
+- [Requisitos Técnicos](#-requisitos-técnicos)
+- [Solução de Problemas](#-solução-de-problemas)
+- [Roteiro para Gravação](#-roteiro-para-gravação)
 
-## 🛠️ Requisitos
+## 🛠️ Tecnologias Utilizadas
 
-### Software Necessário
-- **Java 17+** - [Download Oracle JDK](https://www.oracle.com/java/technologies/downloads/)
-- **Maven 3.6+** - [Download Maven](https://maven.apache.org/download.cgi)
-- **Oracle Database 11g+** - [Download Oracle](https://www.oracle.com/database/technologies/oracle-database-software-downloads.html)
-- **Git** - [Download Git](https://git-scm.com/downloads)
+- **Backend**: Spring Boot 3.5.4
+- **Frontend**: Thymeleaf + Bootstrap 5
+- **Segurança**: Spring Security 6
+- **Banco de Dados**: Oracle Database
+- **Migração**: Flyway
+- **Build**: Maven
+- **Java**: 17+
 
-### Verificar Instalações
-```bash
-java -version
-mvn -version
-git --version
-```
+## 📋 Pré-requisitos
 
-## 🗄️ Configuração do Banco de Dados
+- Java 17 ou superior
+- Maven 3.6+
+- Oracle Database (ou acesso ao banco da FIAP)
+- Eclipse/IntelliJ IDEA (opcional)
 
-### 1. Criar Usuário no Oracle
+## 🚀 Como Executar
 
-Conecte-se ao Oracle como SYS e execute:
+### Via Eclipse/IDE
 
-```sql
--- Criar usuário
-CREATE USER RM555241 IDENTIFIED BY 230205;
+#### 1. Importar o Projeto
+1. **Abrir Eclipse**
+2. **File → Import**
+3. **Maven → Existing Maven Projects**
+4. **Browse** → Selecionar pasta: `challenge3-java-finalizado-main/universidade_fiap`
+5. **Finish**
 
--- Conceder privilégios
-GRANT CONNECT, RESOURCE TO RM555241;
-GRANT CREATE SESSION TO RM555241;
-GRANT CREATE TABLE TO RM555241;
-GRANT CREATE SEQUENCE TO RM555241;
-GRANT CREATE TRIGGER TO RM555241;
-GRANT CREATE VIEW TO RM555241;
-GRANT UNLIMITED TABLESPACE TO RM555241;
+#### 2. Configurar Java
+1. **Botão direito no projeto → Properties**
+2. **Java Build Path → Libraries**
+3. **Modulepath** → Verificar se está usando Java 17+
+4. **Apply and Close**
 
--- Conceder privilégios adicionais para Flyway
-GRANT CREATE ANY PROCEDURE TO RM555241;
-GRANT CREATE ANY TRIGGER TO RM555241;
-GRANT CREATE ANY VIEW TO RM555241;
-GRANT CREATE ANY SEQUENCE TO RM555241;
-GRANT DROP ANY TABLE TO RM555241;
-GRANT DROP ANY SEQUENCE TO RM555241;
-GRANT DROP ANY PROCEDURE TO RM555241;
-GRANT DROP ANY TRIGGER TO RM555241;
-GRANT DROP ANY VIEW TO RM555241;
+#### 3. Configurar Maven
+1. **Botão direito no projeto → Maven → Reload Projects**
+2. Aguardar download das dependências
+3. Verificar se não há erros no console
 
--- Confirmar criação
-SELECT username FROM dba_users WHERE username = 'RM555241';
-```
+#### 4. Executar a Aplicação
 
-### 2. Configurar TNS (Opcional)
+**Método 1: Java Application**
+1. **Navegar até**: `src/main/java/br/com/fiap/universidade_fiap/UniversidadeFiapApplication.java`
+2. **Botão direito → Run As → Java Application**
+3. Aguardar inicialização (pode demorar 1-2 minutos)
+4. Verificar console: "Started UniversidadeFiapApplication"
 
-Se necessário, configure o arquivo `tnsnames.ora`:
+**Método 2: Spring Boot App**
+1. **Botão direito no projeto → Run As → Spring Boot App**
+2. Aguardar inicialização
+3. Verificar se não há erros
 
-```ora
-ORCL = 
-  (DESCRIPTION = 
-    (ADDRESS = (PROTOCOL = TCP)(HOST = oracle.fiap.com.br)(PORT = 1521))
-    (CONNECT_DATA = 
-      (SERVER = DEDICATED)
-      (SERVICE_NAME = ORCL)
-    )
-  )
-```
+**Método 3: Maven**
+1. **Botão direito no projeto → Run As → Maven build**
+2. **Goals**: `spring-boot:run`
+3. **Run**
 
-### 3. Testar Conexão
+### Via Terminal/CMD
 
-```bash
-# Testar conexão via SQL*Plus
-sqlplus RM555241/230205@oracle.fiap.com.br:1521/ORCL
-```
+1. **Navegar até o diretório do projeto**
+   ```bash
+   cd challenge3-java-finalizado-main/universidade_fiap
+   ```
 
-## 🚀 Instalação e Execução
+2. **Compilar o projeto**
+   ```bash
+   mvn clean compile
+   ```
 
-### 1. Clonar o Repositório
+3. **Executar a aplicação**
+   ```bash
+   mvn spring-boot:run
+   ```
 
-```bash
-git clone <URL_DO_REPOSITORIO>
-cd challenge3-java-final-main/universidade_fiap
-```
+4. **Acessar a aplicação**
+   ```
+   http://localhost:8081
+   ```
 
-### 2. Configurar Aplicação
+## 🗄️ Configuração do Banco
 
-O arquivo `src/main/resources/application.properties` já está configurado:
+### 1. Executar Script de Limpeza (Recomendado)
+
+Execute o script `script_limpar_banco.sql` no Oracle para:
+- Limpar dados antigos
+- Recriar tabelas com sequences corretas
+- Inserir dados iniciais
+
+### 2. Configuração de Conexão
+
+As configurações estão em `src/main/resources/application.properties`:
 
 ```properties
-# Configuração do Oracle
+# Banco Oracle FIAP
 spring.datasource.url=jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL
-spring.datasource.username=RM555241
+spring.datasource.username=rm555241
 spring.datasource.password=230205
-spring.datasource.driver-class-name=oracle.jdbc.OracleDriver
-
-# Flyway habilitado
-spring.flyway.enabled=true
-spring.flyway.clean-on-validation-error=true
-spring.flyway.repair-on-migrate=true
-
-# Hibernate desabilitado (Flyway gerencia o schema)
-spring.jpa.hibernate.ddl-auto=none
 ```
 
-### 3. Executar a Aplicação
+### 3. Dados Iniciais
 
-```bash
-# Compilar o projeto
-mvn clean compile
+Após executar o script, você terá os seguintes usuários:
 
-# Executar a aplicação
-mvn spring-boot:run
-```
+| Perfil | Email | Senha |
+|--------|-------|-------|
+| ADMIN | admin@teste.com | Admin123! |
+| GERENTE | gerente@teste.com | Gerente123! |
+| OPERADOR | operador@teste.com | Operador123! |
 
-### 4. Acessar a Aplicação
+## ⚙️ Funcionalidades
 
-Abra o navegador e acesse: **http://localhost:8081**
+### 🔐 Sistema de Autenticação
+- **Login/Logout** com Spring Security
+- **3 Perfis de Usuário**:
+  - **ADMIN**: Acesso total ao sistema
+  - **GERENTE**: Acesso a dashboard e relatórios
+  - **OPERADOR**: Acesso a motos e operações
 
-## 🔐 Credenciais de Acesso
-
-### Usuários Pré-cadastrados
-
-| Perfil | Email | Senha | Descrição |
-|--------|-------|-------|-----------|
-| **ADMIN** | admin@teste.com | Admin123! | Acesso total ao sistema |
-| **GERENTE** | gerente@teste.com | Gerente123! | Gestão de operações |
-| **OPERADOR** | operador@teste.com | Operador123! | Operações básicas |
-
-### Permissões por Perfil
-
-- **ADMIN**: Acesso total (usuários, motos, operações, relatórios)
-- **GERENTE**: Gestão de motos e operações
-- **OPERADOR**: Operações básicas e consultas
-
-## 🎯 Funcionalidades
-
-### 📊 Dashboard
-- Visão geral do sistema
-- Estatísticas de motos e operações
-- Gráficos e métricas
+### 👥 Gestão de Usuários
+- ✅ Cadastrar novos usuários
+- ✅ Listar usuários existentes
+- ✅ Editar informações
+- ✅ Validações de CNPJ e email únicos
+- ✅ Criptografia de senhas (BCrypt)
 
 ### 🏍️ Gestão de Motos
-- **Cadastrar**: Nova moto com placa, chassi, motor
-- **Listar**: Todas as motos cadastradas
-- **Editar**: Modificar dados da moto
-- **Excluir**: Remover moto do sistema
+- ✅ Cadastrar motos
+- ✅ Listar motos com filtros
+- ✅ Editar informações
+- ✅ Validações de placa e chassi únicos
+- ✅ Relacionamento com usuário responsável
 
-### 📋 Status das Motos
-- **Visualizar**: Status atual de todas as motos
-- **Atualizar**: Alterar status (PRONTA, PENDENTE, REPARO, etc.)
-- **Histórico**: Acompanhar mudanças de status
+### 📊 Status das Motos
+- ✅ Definir status (PRONTA, PENDENTE, REPARO_SIMPLES, etc.)
+- ✅ Associar área de estacionamento
+- ✅ Histórico de mudanças de status
 
 ### 🔄 Operações
-- **Check-in/Check-out**: Controle de entrada e saída
-- **Manutenção**: Registro de reparos
-- **Aluguel**: Gestão de aluguéis
+- ✅ **Check-in**: Entrada de moto no sistema
+- ✅ **Check-out**: Saída de moto do sistema
+- ✅ Observações detalhadas
+- ✅ Histórico completo de operações
 
-### 📈 Relatórios
-- **Por Período**: Operações em período específico
-- **Por Status**: Motos por status
-- **Por Moto**: Histórico individual
-- **Exportar**: Dados em formato legível
+### 📈 Dashboard e Relatórios
+- ✅ Estatísticas gerais
+- ✅ Relatórios por período
+- ✅ Gráficos de operações
+- ✅ Métricas de performance
+
+### 🔍 Auditoria
+- ✅ Log de todas as operações
+- ✅ Rastreamento de mudanças
+- ✅ Histórico de usuários
+
+## 🧪 Como Testar
+
+### ✅ 1. Teste de Inicialização
+
+**Objetivo**: Verificar se a aplicação inicia corretamente
+
+**Passos**:
+1. Executar `mvn spring-boot:run`
+2. Aguardar mensagem: `Started UniversidadeFiapApplication`
+3. Acessar `http://localhost:8081`
+4. Verificar se redireciona para login
+
+**Resultado Esperado**: ✅ Aplicação inicia sem erros
+
+### ✅ 2. Teste de Autenticação
+
+**Objetivo**: Verificar sistema de login/logout
+
+#### 2.1 Login Válido
+**Passos**:
+1. Acessar `http://localhost:8081/login`
+2. Inserir: `admin@teste.com` / `Admin123!`
+3. Clicar em "Entrar"
+
+**Resultado Esperado**: ✅ Redireciona para dashboard
+
+#### 2.2 Login Inválido
+**Passos**:
+1. Inserir: `admin@teste.com` / `senhaerrada`
+2. Clicar em "Entrar"
+
+**Resultado Esperado**: ✅ Mostra mensagem de erro
+
+### ✅ 3. Teste de Controle de Acesso
+
+**Objetivo**: Verificar se os perfis funcionam corretamente
+
+#### 3.1 Acesso de ADMIN
+**Passos**:
+1. Login como ADMIN
+2. Verificar se pode acessar:
+   - `/usuario/lista` ✅
+   - `/motos` ✅
+   - `/operacoes` ✅
+   - `/dashboard` ✅
+
+#### 3.2 Acesso de GERENTE
+**Passos**:
+1. Login como GERENTE
+2. Verificar se pode acessar:
+   - `/usuario/lista` ❌ (deve negar)
+   - `/motos` ✅
+   - `/operacoes` ✅
+   - `/dashboard` ✅
+
+#### 3.3 Acesso de OPERADOR
+**Passos**:
+1. Login como OPERADOR
+2. Verificar se pode acessar:
+   - `/usuario/lista` ❌ (deve negar)
+   - `/motos` ✅
+   - `/operacoes` ✅
+   - `/dashboard` ❌ (deve negar)
+
+### ✅ 4. Teste de Cadastro de Usuário
+
+**Objetivo**: Verificar CRUD de usuários
+
+#### 4.1 Cadastro Válido
+**Passos**:
+1. Login como ADMIN
+2. Acessar `/usuario/novo`
+3. Preencher:
+   - Nome: "Teste Usuário"
+   - Email: "teste@exemplo.com"
+   - Senha: "Teste123!"
+   - CNPJ: "12.345.678/0001-90"
+   - Perfil: "OPERADOR"
+4. Clicar "Cadastrar"
+
+**Resultado Esperado**: ✅ Usuário cadastrado com sucesso
+
+#### 4.2 Validação de Email Duplicado
+**Passos**:
+1. Tentar cadastrar com email existente
+2. Clicar "Cadastrar"
+
+**Resultado Esperado**: ✅ Mostra erro "E-mail já cadastrado"
+
+### ✅ 5. Teste de Cadastro de Motos
+
+**Objetivo**: Verificar CRUD de motos
+
+#### 5.1 Cadastro Válido
+**Passos**:
+1. Acessar `/motos`
+2. Clicar "Nova Moto"
+3. Preencher:
+   - Placa: "ABC1234"
+   - Chassi: "CHASSI123456789"
+   - Motor: "150CC"
+   - Usuário: Selecionar
+4. Clicar "Salvar"
+
+**Resultado Esperado**: ✅ Moto cadastrada com sucesso
+
+### ✅ 6. Teste de Operações
+
+**Objetivo**: Verificar sistema de check-in/check-out
+
+#### 6.1 Check-in de Moto
+**Passos**:
+1. Acessar `/operacoes`
+2. Clicar "Nova Operação"
+3. Selecionar:
+   - Moto: Uma moto disponível
+   - Tipo: "CHECK_IN"
+   - Observações: "Entrada da moto"
+4. Clicar "Salvar"
+
+**Resultado Esperado**: ✅ Operação registrada
+
+### ✅ 7. Teste de Dashboard
+
+**Objetivo**: Verificar estatísticas e relatórios
+
+#### 7.1 Acesso ao Dashboard
+**Passos**:
+1. Login como ADMIN ou GERENTE
+2. Acessar `/dashboard`
+3. Verificar se carrega estatísticas
+
+**Resultado Esperado**: ✅ Dashboard carrega com dados
 
 ## 📁 Estrutura do Projeto
 
 ```
 universidade_fiap/
 ├── src/main/java/br/com/fiap/universidade_fiap/
-│   ├── control/           # Controllers (MVC)
-│   │   ├── DashboardController.java
-│   │   ├── HomeController.java
-│   │   ├── LoginController.java
-│   │   ├── MotoController.java
-│   │   ├── OperacaoController.java
-│   │   ├── OperacaoMotoController.java
-│   │   ├── RelatorioController.java
-│   │   └── UsuarioController.java
-│   ├── model/            # Entidades JPA
-│   │   ├── Dashboard.java
-│   │   ├── Moto.java
-│   │   ├── Operacao.java
-│   │   ├── StatusMoto.java
-│   │   └── Usuario.java
-│   ├── repository/       # Repositórios JPA
-│   ├── security/         # Configuração Spring Security
-│   ├── service/          # Serviços de negócio
-│   └── exception/        # Tratamento de exceções
+│   ├── control/          # Controllers REST
+│   ├── model/           # Entidades JPA
+│   ├── repository/      # Repositórios Spring Data
+│   ├── service/         # Serviços de negócio
+│   ├── security/        # Configurações de segurança
+│   └── exception/       # Tratamento de exceções
 ├── src/main/resources/
-│   ├── application.properties    # Configurações
-│   ├── db/migration/            # Scripts Flyway
-│   │   ├── V0__Clean_database.sql
-│   │   ├── V1__Create_tables.sql
-│   │   ├── V2__Insert_initial_data.sql
-│   │   ├── V3__Add_audit_triggers.sql
-│   │   └── V4__Create_notifications_table.sql
-│   ├── templates/               # Templates Thymeleaf
-│   │   ├── fragmentos.html      # Fragmentos reutilizáveis
-│   │   ├── login.html
-│   │   ├── home/
-│   │   ├── motos/
-│   │   ├── operacoes/
-│   │   ├── relatorios/
-│   │   └── usuario/
-│   └── static/css/              # Estilos CSS
-└── pom.xml                      # Dependências Maven
+│   ├── templates/       # Templates Thymeleaf
+│   ├── static/         # CSS, JS, imagens
+│   ├── db/migration/   # Scripts Flyway
+│   └── application.properties
+└── pom.xml
 ```
 
-## 🛠️ Tecnologias Utilizadas
+## 🎯 Requisitos Técnicos Atendidos
 
-### Backend
-- **Spring Boot 3.5.4** - Framework principal
-- **Spring Security** - Autenticação e autorização
-- **Spring Data JPA** - Persistência de dados
-- **Hibernate** - ORM
-- **Flyway** - Controle de versão do banco
+### ✅ Thymeleaf (30 pontos)
+- Páginas HTML com Thymeleaf para CRUD completo
+- Fragmentos reutilizáveis (navbar, cabeçalho, rodapé)
+- Validações no frontend
+- Interface responsiva com Bootstrap
 
-### Frontend
-- **Thymeleaf** - Template engine
-- **Bootstrap 5** - Framework CSS
-- **Font Awesome** - Ícones
-- **JavaScript** - Validações client-side
+### ✅ Flyway (20 pontos)
+- Configuração do Flyway para versionamento
+- 4 versões de migração (V1 a V4)
+- Migrações automáticas na inicialização
+- Controle de versão do banco de dados
 
-### Banco de Dados
-- **Oracle Database** - Banco principal
-- **JDBC Driver** - Conectividade
+### ✅ Spring Security (30 pontos)
+- Sistema de autenticação via formulário
+- 3 tipos de usuário: ADMIN, GERENTE, OPERADOR
+- Proteção de rotas baseada em perfil
+- Controle de sessão e logout
 
-### Ferramentas
-- **Maven** - Gerenciamento de dependências
-- **Git** - Controle de versão
+### ✅ Funcionalidades Completas (20 pontos)
+- CRUD completo de usuários e motos
+- Sistema de operações (check-in/check-out)
+- Dashboard com estatísticas
+- Relatórios e auditoria
+- Validações em formulários e dados
 
-## 🗃️ Estrutura do Banco de Dados
+## 🔧 Solução de Problemas
 
-### Tabelas Principais
-
-#### `usuarios`
-- `id` (PK) - Identificador único
-- `nome_filial` - Nome da filial
-- `email` - Email do usuário
-- `senha_hash` - Senha criptografada
-- `cnpj` - CNPJ da empresa
-- `endereco` - Endereço
-- `telefone` - Telefone
-- `perfil` - ADMIN/GERENTE/OPERADOR
-- `data_criacao` - Data de criação
-
-#### `motos`
-- `id` (PK) - Identificador único
-- `placa` - Placa da moto
-- `chassi` - Chassi da moto
-- `motor` - Motor da moto
-- `usuario_id` (FK) - Usuário responsável
-- `data_criacao` - Data de criação
-
-#### `status_motos`
-- `id` (PK) - Identificador único
-- `moto_id` (FK) - Moto relacionada
-- `status` - Status atual
-- `area` - Área onde está
-- `usuario_id` (FK) - Usuário responsável
-- `data_criacao` - Data de criação
-
-#### `operacoes`
-- `id` (PK) - Identificador único
-- `moto_id` (FK) - Moto relacionada
-- `tipo_operacao` - Tipo da operação
-- `usuario_id` (FK) - Usuário responsável
-- `observacoes` - Observações
-- `data_criacao` - Data de criação
-
-## 🚨 Solução de Problemas
-
-### Erro de Conexão com Oracle
+### Erro: "Port 8081 is already in use"
 ```bash
-# Verificar se o Oracle está rodando
-tnsping ORCL
-
-# Testar conexão
-sqlplus RM555241/230205@oracle.fiap.com.br:1521/ORCL
-```
-
-### Erro de Flyway
-```bash
-# Limpar e recriar
-mvn clean compile
-mvn spring-boot:run
-```
-
-### Porta 8081 em Uso
-```bash
-# Verificar processos na porta
+# Windows
 netstat -ano | findstr :8081
-
-# Parar processo (substitua PID)
 taskkill /PID <PID> /F
+
+# Linux/Mac
+lsof -ti:8081 | xargs kill -9
 ```
 
-### Erro de Compilação
-```bash
-# Limpar cache Maven
-mvn clean
-mvn compile
+### Erro: "Could not execute statement [ORA-01400]"
+- Execute o script `script_limpar_banco.sql`
+- Reinicie a aplicação
+
+### Erro: "Flyway validation failed"
+- Desabilite temporariamente o Flyway:
+  ```properties
+  spring.flyway.enabled=false
+  ```
+
+### Erro: "ClassNotFoundException: Oracle12cDialect"
+- Use o dialect correto:
+  ```properties
+  spring.jpa.database-platform=org.hibernate.dialect.OracleDialect
+  ```
+
+### Aplicação não inicia
+1. Verifique se o Java 17+ está instalado
+2. Verifique se o Maven está configurado
+3. Verifique a conexão com o banco Oracle
+4. Execute: `mvn clean compile`
+
+## 🎬 Roteiro para Gravação
+
+### **INTRODUÇÃO (2 minutos)**
+
+#### 1. **Apresentação do Projeto**
+```
+"Olá! Hoje vou demonstrar o Sistema de Gestão de Motos TrackZone, 
+desenvolvido com Spring Boot, Thymeleaf e Spring Security.
+
+Este sistema permite:
+- Gerenciar usuários com diferentes perfis
+- Cadastrar e controlar motos
+- Registrar operações de check-in/check-out
+- Visualizar relatórios e dashboard"
+```
+
+#### 2. **Tecnologias Utilizadas**
+```
+"O projeto utiliza:
+- Spring Boot 3.5.4
+- Thymeleaf para templates
+- Spring Security para autenticação
+- Flyway para migração de banco
+- Oracle Database
+- Bootstrap para interface"
+```
+
+### **DEMONSTRAÇÃO TÉCNICA (12-15 minutos)**
+
+#### 3. **Estrutura do Projeto (2 minutos)**
+```
+"Vou mostrar a estrutura do projeto:
+- src/main/java: Código Java
+- src/main/resources: Configurações e templates
+- src/main/resources/db/migration: Scripts Flyway
+- Templates Thymeleaf organizados por funcionalidade"
+```
+
+#### 4. **Spring Security - Autenticação (3 minutos)**
+
+**4.1. Tela de Login**
+- Acessar: `http://localhost:8081/login`
+- Mostrar formulário de login
+- Explicar: "Sistema de autenticação com Spring Security"
+
+**4.2. Testar diferentes usuários**
+```
+Credenciais de teste:
+- Admin: admin@teste.com / Admin123!
+- Gerente: gerente@teste.com / Gerente123!
+- Operador: operador@teste.com / Operador123!
+```
+
+**4.3. Controle de acesso**
+- Mostrar que cada perfil tem acesso diferente
+- Tentar acessar rotas restritas
+
+#### 5. **Thymeleaf - Interface (3 minutos)**
+
+**5.1. Templates e Fragmentos**
+- Mostrar estrutura de templates
+- Explicar fragmentos (navbar, cabeçalho)
+- Mostrar reutilização de código
+
+**5.2. Formulários com Validação**
+- Cadastro de usuário com validações
+- Mostrar mensagens de erro/sucesso
+- Validação em tempo real no frontend
+
+#### 6. **Flyway - Migração de Banco (2 minutos)**
+
+**6.1. Scripts de Migração**
+- Mostrar arquivos V1, V2, V3, V4
+- Explicar versionamento do banco
+- Mostrar logs do Flyway
+
+**6.2. Estrutura do Banco**
+- Conectar no Oracle e mostrar tabelas
+- Mostrar sequences criadas
+- Explicar relacionamentos
+
+#### 7. **Funcionalidades Completas (5 minutos)**
+
+**7.1. CRUD de Usuários**
+- Listar usuários
+- Cadastrar novo usuário
+- Editar usuário
+- Mostrar validações
+
+**7.2. CRUD de Motos**
+- Listar motos
+- Cadastrar nova moto
+- Mostrar relacionamento com usuário
+- Validações de placa e chassi
+
+**7.3. Operações**
+- Check-in de moto
+- Check-out de moto
+- Histórico de operações
+
+**7.4. Dashboard e Relatórios**
+- Estatísticas gerais
+- Relatórios por período
+- Gráficos e métricas
+
+### **DEMONSTRAÇÃO DE REQUISITOS TÉCNICOS (3 minutos)**
+
+#### 8. **Thymeleaf (30 pontos)**
+```
+"Requisitos atendidos:
+✅ Páginas HTML com Thymeleaf para CRUD completo
+✅ Fragmentos reutilizáveis (navbar, cabeçalho, rodapé)
+✅ Validações no frontend
+✅ Interface responsiva com Bootstrap"
+```
+
+#### 9. **Flyway (20 pontos)**
+```
+"Requisitos atendidos:
+✅ Configuração do Flyway para versionamento
+✅ 4 versões de migração (V1 a V4)
+✅ Migrações automáticas na inicialização
+✅ Controle de versão do banco de dados"
+```
+
+#### 10. **Spring Security (30 pontos)**
+```
+"Requisitos atendidos:
+✅ Sistema de autenticação via formulário
+✅ 3 tipos de usuário: ADMIN, GERENTE, OPERADOR
+✅ Proteção de rotas baseada em perfil
+✅ Controle de sessão e logout"
+```
+
+#### 11. **Funcionalidades Completas (20 pontos)**
+```
+"Requisitos atendidos:
+✅ CRUD completo de usuários e motos
+✅ Sistema de operações (check-in/check-out)
+✅ Dashboard com estatísticas
+✅ Relatórios e auditoria
+✅ Validações em formulários e dados"
+```
+
+### **CONCLUSÃO (2 minutos)**
+
+#### 12. **Resumo Técnico**
+```
+"O sistema demonstra:
+- Arquitetura MVC bem estruturada
+- Segurança robusta com Spring Security
+- Interface moderna com Thymeleaf
+- Controle de versão com Flyway
+- Integração completa com Oracle Database"
+```
+
+#### 13. **Pontos Fortes**
+```
+"Principais destaques:
+- Código limpo seguindo princípios SOLID
+- Interface intuitiva e responsiva
+- Sistema de auditoria completo
+- Validações robustas
+- Controle de acesso granular"
+```
+
+#### 14. **Encerramento**
+```
+"Este sistema atende todos os requisitos do challenge:
+- Thymeleaf para frontend
+- Flyway para migrações
+- Spring Security para autenticação
+- Funcionalidades completas e validações
+
+Obrigado pela atenção!"
 ```
 
 ## 📞 Suporte
 
 Para dúvidas ou problemas:
+1. Verifique os logs da aplicação
+2. Consulte a seção "Solução de Problemas"
+3. Verifique se todos os pré-requisitos estão atendidos
 
-1. **Verificar logs**: Console da aplicação
-2. **Testar conexão**: Banco de dados
-3. **Validar configurações**: `application.properties`
-4. **Recompilar**: `mvn clean compile`
+## 🎯 Próximos Passos
 
-## 🎉 Conclusão
-
-Este sistema está completo e funcional, atendendo todos os requisitos do desafio:
-
-- ✅ **Thymeleaf**: Templates funcionais com fragmentos
-- ✅ **Flyway**: 5 migrações de banco
-- ✅ **Spring Security**: 3 perfis de usuário
-- ✅ **Funcionalidades**: CRUD completo + relatórios
-- ✅ **Qualidade**: Código limpo e bem estruturado
-
-**Pontuação Estimada: 100/100 pontos**
+1. **Testar todas as funcionalidades**
+2. **Verificar validações**
+3. **Testar diferentes perfis de usuário**
+4. **Gravar demonstração** seguindo o roteiro
 
 ---
 
-**Desenvolvido com ❤️ para o Challenge 3 - Java Advanced**
+**Desenvolvido com ❤️ para o Challenge Java Advanced - FIAP**
