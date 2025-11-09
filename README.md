@@ -135,7 +135,7 @@ mvn spring-boot:run
 
 Após iniciar, aguarde alguns segundos (15-30 segundos) e acesse:
 
-- **Aplicação Principal**: http://localhost:8081
+- **Aplicação Principal**: http://localhost:8081/login
 - **H2 Console** (banco de dados): http://localhost:8081/h2-console
   - JDBC URL: `jdbc:h2:mem:trackzone`
   - Usuário: `sa`
