@@ -87,6 +87,8 @@ cd challenge3-JAVA
 
 O projeto já está configurado para usar H2 em memória. Não é necessário configuração adicional.
 
+**⚠️ Nota**: A aplicação usa **H2 Database em memória**, então os dados são perdidos ao reiniciar.
+
 #### Opção B: Oracle Database (Produção)
 
 Edite `src/main/resources/application.properties`:
@@ -102,6 +104,20 @@ spring.jpa.database-platform=org.hibernate.dialect.OracleDialect
 
 ### 3. Executar a Aplicação
 
+#### Opção 1: Usando PowerShell (Recomendado)
+
+```powershell
+.\executar.ps1
+```
+
+#### Opção 2: Usando Batch (Windows)
+
+```cmd
+executar.bat
+```
+
+#### Opção 3: Manualmente
+
 ```bash
 # Compilar o projeto
 mvn clean compile
@@ -110,9 +126,23 @@ mvn clean compile
 mvn spring-boot:run
 ```
 
+**✅ Correções Aplicadas:**
+- Spring AI desabilitado por padrão (evita erros de inicialização)
+- Scripts de execução atualizados com verificação de Maven
+- Uso de `mvn spring-boot:run` (mais confiável)
+
 ### 4. Acessar a Aplicação
 
-Abra o navegador e acesse: **http://localhost:8081**
+Após iniciar, aguarde alguns segundos (15-30 segundos) e acesse:
+
+- **Aplicação Principal**: http://localhost:8081
+- **H2 Console** (banco de dados): http://localhost:8081/h2-console
+  - JDBC URL: `jdbc:h2:mem:trackzone`
+  - Usuário: `sa`
+  - Senha: (vazio)
+- **Chatbot IA**: http://localhost:8081/ai/chat
+
+**⚠️ Nota**: A primeira inicialização pode demorar mais (download de dependências). Aguarde 15-30 segundos após iniciar para a aplicação estar totalmente pronta.
 
 ---
 
@@ -407,29 +437,41 @@ universidade_fiap/
 
 #### Como Usar:
 
+**⚠️ Importante**: O Spring AI está **desabilitado por padrão** para evitar erros de inicialização. A aplicação funciona normalmente sem ele (usa fallback inteligente).
+
 **Opção 1: Ollama (Local, Gratuito)**
 ```bash
 # 1. Instalar Ollama: https://ollama.ai/
 # 2. Baixar modelo
 ollama pull llama2
 
-# 3. Descomentar no application.properties:
+# 3. No application.properties, descomente:
 spring.ai.ollama.base-url=http://localhost:11434
 spring.ai.ollama.chat.options.model=llama2
 spring.ai.ollama.chat.options.temperature=0.7
+
+# 4. E comente as linhas de desabilitação:
+# spring.ai.openai.chat.enabled=false
+# spring.ai.ollama.chat.enabled=false
 ```
 
 **Opção 2: OpenAI (Pago)**
 ```properties
-# Descomentar no application.properties:
+# 1. Obtenha API Key: https://platform.openai.com/api-keys
+# 2. No application.properties, descomente e configure:
 spring.ai.openai.api-key=sua-api-key-aqui
 spring.ai.openai.chat.options.model=gpt-3.5-turbo
 spring.ai.openai.chat.options.temperature=0.7
+
+# 3. E comente as linhas de desabilitação:
+# spring.ai.openai.chat.enabled=false
+# spring.ai.ollama.chat.enabled=false
 ```
 
 **Acessar Chat:**
 - URL: `/ai/chat`
 - Requer autenticação (todos os perfis)
+- Funciona mesmo sem IA configurada (usa fallback)
 
 ---
 
@@ -523,34 +565,49 @@ spring.ai.openai.chat.options.temperature=0.7
 
 ## 🚨 Solução de Problemas
 
-### Erro de Conexão com Banco
-```bash
-# H2 (desenvolvimento) - não precisa configuração
-# Oracle (produção) - verificar connection string
-```
-
-### Erro de Compilação
-```bash
-# Limpar cache Maven
-mvn clean
-mvn compile
-```
-
-### Spring AI não funciona
-- Verificar se Ollama está rodando: `ollama list`
-- Verificar logs da aplicação
-- O sistema funciona normalmente com fallback
-
 ### Porta 8081 em Uso
-```bash
-# Windows
-netstat -ano | findstr :8081
-taskkill /PID <PID> /F
 
-# Linux/Mac
+```powershell
+# Verificar o que está usando a porta
+netstat -ano | findstr :8081
+
+# Matar o processo (substitua <PID> pelo ID do processo)
+taskkill /PID <PID> /F
+```
+
+**Linux/Mac:**
+```bash
 lsof -i :8081
 kill -9 <PID>
 ```
+
+### Erro de Compilação
+
+```powershell
+# Limpar e recompilar
+mvn clean compile
+```
+
+### Aplicação não Inicia
+
+1. Verifique os logs no console
+2. Verifique se Java e Maven estão no PATH
+3. Verifique se a porta 8081 está livre
+4. Tente executar manualmente: `mvn spring-boot:run`
+
+### Erro de Conexão com Banco
+
+- **H2 (desenvolvimento)**: Não precisa configuração - funciona automaticamente
+- **Oracle (produção)**: Verificar connection string no `application.properties`
+
+### Spring AI não funciona
+
+- O Spring AI está **desabilitado por padrão** - isso é normal e esperado
+- A aplicação funciona normalmente sem ele (usa fallback inteligente)
+- Para habilitar:
+  - Verificar se Ollama está rodando: `ollama list`
+  - Verificar logs da aplicação
+  - Seguir instruções na seção "Spring AI - Assistente Inteligente"
 
 ---
 
@@ -629,9 +686,10 @@ Este sistema está completo e funcional, atendendo todos os requisitos do desafi
 
 - [Instruções Spring AI](INSTRUCOES_SPRING_AI.md)
 - [Análise de Entrega](ANALISE_ENTREGA_SPRINT4.md)
-- [Guia para Apresentação em Vídeo](README_VIDEO.md)
 - [Diagrama de Classes](DIAGRAMA_CLASSES.md)
 - [Diagrama de Fluxo](DIAGRAMA_FLUXO.md)
+
+**Nota**: O conteúdo do `COMO_EXECUTAR.md` foi consolidado neste README principal.
 
 ---
 
