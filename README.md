@@ -682,14 +682,7 @@ Este sistema está completo e funcional, atendendo todos os requisitos do desafi
 
 ---
 
-## 📚 Documentação Adicional
-
-- [Instruções Spring AI](INSTRUCOES_SPRING_AI.md)
-- [Análise de Entrega](ANALISE_ENTREGA_SPRINT4.md)
-- [Diagrama de Classes](DIAGRAMA_CLASSES.md)
-- [Diagrama de Fluxo](DIAGRAMA_FLUXO.md)
-
-**Nota**: O conteúdo do `COMO_EXECUTAR.md` foi consolidado neste README principal.
+**Nota**: Toda a documentação foi consolidada neste README principal.
 
 ---
 

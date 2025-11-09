@@ -1,40 +1,31 @@
 package br.com.fiap.universidade_fiap.control;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import br.com.fiap.universidade_fiap.model.Usuario;
 import br.com.fiap.universidade_fiap.repository.MotoRepository;
-import br.com.fiap.universidade_fiap.repository.UsuarioRepository;
+import br.com.fiap.universidade_fiap.service.AuthenticationService;
 
+/**
+ * Controller para página inicial
+ * Refatorado para usar AuthenticationService e evitar código duplicado
+ */
 @Controller
 public class HomeController {
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private MotoRepository motoRepository;
 
     @Autowired
-    private MotoRepository motoRepository;
+    private AuthenticationService authenticationService;
 
     @GetMapping({"/", "/index"})
     public ModelAndView index() {
         ModelAndView mv = new ModelAndView("home/index");
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        
-        // Verificar se o usuário está autenticado
-        if (auth != null && auth.isAuthenticated() && !auth.getName().equals("anonymousUser")) {
-            String email = auth.getName();
-            Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
-            usuarioOpt.ifPresent(u -> mv.addObject("usuario_logado", u));
-        }
-
+        authenticationService.adicionarUsuarioLogado(mv);
         mv.addObject("motos", motoRepository.findAll());
 
         return mv;

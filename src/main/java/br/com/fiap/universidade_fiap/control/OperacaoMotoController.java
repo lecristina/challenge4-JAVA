@@ -1,7 +1,7 @@
 package br.com.fiap.universidade_fiap.control;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,28 +16,34 @@ import br.com.fiap.universidade_fiap.model.Usuario;
 import br.com.fiap.universidade_fiap.repository.MotoRepository;
 import br.com.fiap.universidade_fiap.repository.OperacaoRepository;
 import br.com.fiap.universidade_fiap.repository.StatusMotosRepository;
-import br.com.fiap.universidade_fiap.repository.UsuarioRepository;
+import br.com.fiap.universidade_fiap.service.AuthenticationService;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Controller para operações relacionadas a motos
+ * Refatorado para usar AuthenticationService e evitar código duplicado
+ */
 @Controller
 public class OperacaoMotoController {
+
+    private static final Logger logger = LoggerFactory.getLogger(OperacaoMotoController.class);
 
     private final MotoRepository motoRepository;
     private final OperacaoRepository operacaoRepository;
     private final StatusMotosRepository statusMotosRepository;
-    private final UsuarioRepository usuarioRepository;
+    private final AuthenticationService authenticationService;
 
     public OperacaoMotoController(MotoRepository motoRepository, 
                                  OperacaoRepository operacaoRepository,
                                  StatusMotosRepository statusMotosRepository,
-                                 UsuarioRepository usuarioRepository) {
+                                 AuthenticationService authenticationService) {
         this.motoRepository = motoRepository;
         this.operacaoRepository = operacaoRepository;
         this.statusMotosRepository = statusMotosRepository;
-        this.usuarioRepository = usuarioRepository;
+        this.authenticationService = authenticationService;
     }
 
 
@@ -64,9 +70,7 @@ public class OperacaoMotoController {
             }
             
             // Adicionar usuário logado
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            usuarioRepository.findByEmail(auth.getName())
-                .ifPresent(usuario -> mv.addObject("usuario_logado", usuario));
+            authenticationService.adicionarUsuarioLogado(mv);
             
             mv.addObject("moto", moto);
             mv.addObject("tiposOperacao", new String[]{"CHECK_IN", "CHECK_OUT"});
@@ -83,6 +87,7 @@ public class OperacaoMotoController {
     public ModelAndView processarOperacao(@PathVariable Long id, 
                                          @RequestParam String tipoOperacao,
                                          @RequestParam String descricao) {
+        logger.info("Processando operação: motoId={}, tipo={}", id, tipoOperacao);
         ModelAndView mv = new ModelAndView();
         
         try {
@@ -91,9 +96,10 @@ public class OperacaoMotoController {
                 .orElseThrow(() -> new RuntimeException("Moto não encontrada"));
             
             // Buscar usuário logado
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            Usuario usuario = usuarioRepository.findByEmail(auth.getName())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+            Usuario usuario = authenticationService.getUsuarioLogado();
+            if (usuario == null) {
+                throw new RuntimeException("Usuário não autenticado");
+            }
             
             // Criar operação
             Operacao operacao = new Operacao();
@@ -129,6 +135,7 @@ public class OperacaoMotoController {
     @PostMapping("/motos/{id}/finalizar-operacao")
     public ModelAndView finalizarOperacao(@PathVariable Long id, 
                                          @RequestParam String observacoes) {
+        logger.info("Finalizando operação: motoId={}", id);
         ModelAndView mv = new ModelAndView();
         
         try {
@@ -137,9 +144,10 @@ public class OperacaoMotoController {
                 .orElseThrow(() -> new RuntimeException("Moto não encontrada"));
             
             // Buscar usuário logado
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            Usuario usuario = usuarioRepository.findByEmail(auth.getName())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+            Usuario usuario = authenticationService.getUsuarioLogado();
+            if (usuario == null) {
+                throw new RuntimeException("Usuário não autenticado");
+            }
             
             // Criar operação de finalização
             Operacao operacao = new Operacao();
@@ -178,9 +186,7 @@ public class OperacaoMotoController {
         
         try {
             // Adicionar usuário logado
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            usuarioRepository.findByEmail(auth.getName())
-                .ifPresent(usuario -> mv.addObject("usuario_logado", usuario));
+            authenticationService.adicionarUsuarioLogado(mv);
             
             List<Operacao> operacoes;
             
